@@ -11,9 +11,9 @@ WIP experimental project to make for a better ML development UX.
 
 ## Tasks
 
-- [ ] Add a template makefile to make any ML project.
-- [ ] Add a `main.py` for the application-specific Python code.
-- [ ] Create `datatracker` abstraction to accept any tracking function as well as inputs.
-- [ ] Figure out SIGSTP and SIGCONT abstractions
-- [ ] Figure out how to work with `pandas`, `tf.datasets`, and `torch.utils.data`
+- [x] Add a template makefile to make any ML project.
+- [x] Add a `main.py` for the application-specific Python code.
+- [x] Create `datatracker` abstraction to accept any tracking function as well as inputs.
+- [ ] Figure out SIGSTP and SIGCONT abstractions.
+- [ ] Figure out how to work with `pandas`, `tf.datasets`, and `torch.utils.data`.
 - [ ] idk more stuff
