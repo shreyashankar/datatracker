@@ -4,7 +4,7 @@ WIP experimental project to make for a better ML development UX.
 
 ## Themes
 
-* Easy reproducibility: template for custom makefile, and require all seeds and hparams to be defined in the makefile
+* Easy reproducibility: template for custom makefile, and require all seeds to be defined in the makefile
 * Easy to debug: ID every data point and track whatever the user wants on each iteration of training
 * Easy to interact with: write signal handlers to inspect "states" and "transitions" of the modeling process
 * Model-agnostic: a model is just a function, no matter what framework it was written in
