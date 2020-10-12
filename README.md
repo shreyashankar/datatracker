@@ -16,5 +16,6 @@ WIP experimental project to make for a better ML development UX.
 - [x] Create `datatracker` abstraction to accept any tracking function as well as inputs.
 - [ ] Figure out SIGSTP and SIGCONT abstractions.
 - [ ] Log all params.
+- [ ] Pipe `git diff` to some log.
 - [ ] Figure out how to work with `pandas`, `tf.datasets`, and `torch.utils.data`.
 - [ ] idk more stuff
