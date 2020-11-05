@@ -17,7 +17,7 @@ WIP experimental project to make for a better ML development UX.
 - [x] Log biggest/smallest gains in any metric.
 - [x] Log biggest/smallest gains in any metric at the iter level, not just globally.
 - [ ] Track when an example becomes misclassified or mispredicted.
-- [ ] Track most confident false positives and false negatives.
+- [x] Track most confident false positives and false negatives.
 - [ ] Add support for val set (it already implicitly exists but we need to make sure they have different ids).
 - [ ] Partially log metrics depending on the size of the dataset (not every iter, for example).
 - [ ] Figure out SIGSTP and SIGCONT abstractions.
