@@ -16,7 +16,8 @@ WIP experimental project to make for a better ML development UX.
 - [x] Create `datatracker` abstraction to accept any tracking function as well as inputs.
 - [x] Log biggest/smallest gains in any metric.
 - [x] Log biggest/smallest gains in any metric at the iter level, not just globally.
-- [ ] Track when an example becomes misclassified or mispredicted.
+- [ ] Track when an example goes from mispredicted to correctly predicted.
+- [ ] Track when an example goes from correctly predicted to mispredicted.
 - [x] Track most confident false positives and false negatives.
 - [ ] Add support for val set (it already implicitly exists but we need to make sure they have different ids).
 - [ ] Partially log metrics depending on the size of the dataset (not every iter, for example).
