@@ -9,6 +9,8 @@ setup(
         'numpy',
         'pylint',
         'mypy',
-        'scikit-learn'
+        'scikit-learn',
+        'torch',
+        'torchvision'
     ]
 )

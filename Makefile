@@ -5,6 +5,11 @@ VENV_NAME?=venv
 PYTHON=${VENV_NAME}/bin/python3
 
 # Include your variables here
+RANDOM_SEED:=42
+NUM_EPOCHS:=15
+INPUT_DIM:=784
+HIDDEN_DIM:=128
+OUTPUT_DIM:=10
 
 .DEFAULT: help
 help:
@@ -34,4 +39,4 @@ lint: venv
 	${PYTHON} -m mypy
 
 run: venv
-	${PYTHON} main.py
+	${PYTHON} main.py --seed $(RANDOM_SEED) --num_epochs $(NUM_EPOCHS) --input_dim $(INPUT_DIM) --hidden_dim $(HIDDEN_DIM) --output_dim $(OUTPUT_DIM)

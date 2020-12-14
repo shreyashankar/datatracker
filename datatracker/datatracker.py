@@ -4,32 +4,42 @@ import pandas as pd
 import signal
 import sys
 import time
+import torch
 
 
 class DataTracker:
 
-    def __init__(self, data=None, y=None, id=None, output_dir=None):
-        if data is None and id is None:
-            raise('Must input either the data or list of ids for the data.')
-        
+    def __init__(self, output_dir=None):    
         self.dfs = []
-        self.data = data
-        self.id = id if id is not None else np.arange(len(self.data))
-        if 'id' not in list(self.data.columns):
-            self.data['id'] = self.id
-        
-        self.y = y
         self.tracker_fns = {}
         self.iter = 0
         self.output_dir = os.path.join(
             os.getcwd(), output_dir if output_dir else 'datatracker_outputs')
 
         # Make output dir if necessary
-#         if not os.path.exists(self.output_dir):
-#             os.makedirs(self.output_dir)
+        if not os.path.exists(self.output_dir):
+            os.makedirs(self.output_dir)
+        
+        # Set variables to be uninitialized
+        self.data = None
+        self.id = None
+        self.label = None
 
         # Install signal handlers
         # self.install_signal_handlers()
+    
+    def register_pandas_data(self, data: pd.DataFrame, label_col: str, id_col: str) -> None:
+        """
+        Registers a dataset as a pandas dataframe.
+        """
+        if id_col not in data.columns:
+            raise(f'ID column {id_col} is not in the dataframe.')
+        if label_col not in data.columns:
+            raise(f'Label column {label_col} is not in the dataframe.')
+        
+        self.data = data
+        self.id = data[id_col]
+        self.label = data[label_col]
 
     def install_signal_handlers(self):
 
@@ -55,7 +65,14 @@ class DataTracker:
         self.tracker_fns[name] = tracker_fn
 
     def track(self, **kwargs):
+        """
+        Tracks metrics for examples. If pandas dataset is not registered, user should pass in id and label. Passing in iteration is also strongly encouraged.
+        """
         id = self.id if 'id' not in kwargs else kwargs.get('id')
+
+        if id is None:
+            raise('Must register a pandas dataset or pass the id.')
+
         iter = self.iter if 'iter' not in kwargs else kwargs.get('iter')
         df = pd.DataFrame({'id': id})
 
@@ -66,8 +83,10 @@ class DataTracker:
             df[name] = tracker_fn(**curr_kwargs)
         
         # Create label column
-        if self.y is not None:
-            df['label'] = self.y[id]
+        if self.label is not None:
+            df['label'] = self.label[id]
+        elif kwargs.get('label') is not None:
+            df['label'] = kwargs.get('label')
 
         # Create iteration column
         df['iter'] = iter * np.ones(len(df.index), dtype='int')
@@ -88,16 +107,16 @@ class DataTracker:
         self.get_results().to_csv(filename + '.csv', index=False)
     
     def get_largest_false_positives(self, name, k, features_to_show=[], last_iter=True):
-        if self.y is None:
-            raise('Label attribute not found.')
         k_df = self._get_k(name, k=None, last_iter=last_iter, ascending=False)
+        if 'label' not in k_df.columns:
+            raise('Label not tracked.')
         k_df = k_df[k_df['label'] != 1].head(k)
         return self._merge_with_features(k_df, features_to_show)
     
     def get_smallest_false_negatives(self, name, k, features_to_show=[], last_iter=True):
-        if self.y is None:
-            raise('Label attribute not found.')
         k_df = self._get_k(name, k=None, last_iter=last_iter, ascending=True)
+        if 'label' not in k_df.columns:
+            raise('Label not tracked.')
         k_df = k_df[k_df['label'] != 0].head(k)
         return self._merge_with_features(k_df, features_to_show)
     
@@ -116,7 +135,7 @@ class DataTracker:
             max_iter = df['iter'].max()
             candidate_df = df[df['iter'] == max_iter]
         cols = ['id', name]
-        if self.y is not None:
+        if self.label is not None:
             cols.append('label')
             
         k_df = candidate_df.sort_values(by=[name], ascending=ascending)[cols]
@@ -126,7 +145,7 @@ class DataTracker:
         return k_df
     
     def _merge_with_features(self, df, features_to_show=[], filter_criteria={}):
-        if len(features_to_show) > 0 or filter_criteria is not None:
+        if len(features_to_show) > 0 or len(filter_criteria) > 0:
             if self.data is None:
                 raise('Data attribute not found.')
                 
@@ -184,9 +203,9 @@ class DataTracker:
         return gains.sort_values(by=['gain'], ascending=ascending).head(k)
     
     def get_individual(self, id, name, features_to_show=[]):
-        df = self.get_results.copy()
+        df = self.get_results().copy()
         cols = ['id', name]
-        if self.y is not None:
+        if self.label is not None:
             cols.append('label')
         
         results_df = df[df['id'] == id][cols]
@@ -194,7 +213,7 @@ class DataTracker:
     
     def get_group(self, filter_criteria, name, features_to_show=[], ascending=True):
         cols = ['id', name]
-        if self.y is not None:
+        if self.label is not None:
             cols.append('label')
 
         df = self.get_results().copy()[cols]
